@@ -6,6 +6,8 @@
 image:
   file: .gitpod.Dockerfile
 
+ports:
+  - port: 3306
 # The 'tasks' field is a list of tasks to run when the workspace starts.
 # Each task can have 'init' and 'command' fields.
 # The 'init' field is a command that is run when the workspace is first initialized.
