@@ -1,0 +1,4 @@
+CREATE DATABASE testdb;
+CREATE USER 'root'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON testdb.* TO 'root'@'%';
+FLUSH PRIVILEGES;
