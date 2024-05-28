@@ -12,7 +12,7 @@ USER root
 # Tree is a recursive directory listing program that produces a depth-indented listing of files.
 # The apt-get update command is used to download package information from all configured sources.
 # The apt-get install command is used to install the specified packages.
-RUN apt-get update && apt-get install -y cron tree
+RUN apt-get update && apt-get install -y cron mariadb-server mysql-server tree
 
 # Start the cron service.
 # The service command is used to run a System V init script.
