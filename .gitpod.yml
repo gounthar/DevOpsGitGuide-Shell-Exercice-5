@@ -4,14 +4,16 @@
 # The 'image' field specifies the Docker image to use for the workspace.
 # The 'file' field under 'image' points to the Dockerfile that defines the Docker image.
 image:
-  file: .gitpod.Dockerfile
+  file: .gitpod.Dockerfile  # Path to the Dockerfile
 
+# 'ports' field is a list of ports that Gitpod will automatically expose when they are actively listened to by your application.
 ports:
-  - port: 3306
+  - port: 3306  # MySQL/MariaDB default port
+
 # The 'tasks' field is a list of tasks to run when the workspace starts.
 # Each task can have 'init' and 'command' fields.
 # The 'init' field is a command that is run when the workspace is first initialized.
 # The 'command' field is a command that is run after the 'init' command.
 tasks:
-  # This task makes all .sh files in any subdirectory of the current directory executable.
-  - init: chmod +x ./*/*.sh
+  # This task starts the MariaDB service when the workspace is first initialized.
+  - init: sudo service mariadb start
