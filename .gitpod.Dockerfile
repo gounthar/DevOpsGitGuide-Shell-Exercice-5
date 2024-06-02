@@ -15,6 +15,21 @@ USER root
 # The apt-get install command is used to install the specified packages.
 RUN apt-get update && apt-get install -y cron mariadb-server mariadb-client tree
 
+# Install ngrok
+# ngrok is a cross-platform application that enables developers to expose a local development server to the Internet with minimal effort.
+# The application captures all traffic for detailed inspection and replay.
+# The curl command is used to download the ngrok.asc file from the ngrok-agent.s3.amazonaws.com server.
+# The tee command is used to write the output of the curl command to the /etc/apt/trusted.gpg.d/ngrok.asc file.
+# The echo command is used to add the ngrok-agent.s3.amazonaws.com server to the list of apt sources.
+# The apt update command is used to download package information from all configured sources.
+# The apt install command is used to install the ngrok package.
+RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+ | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+ && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+ | sudo tee /etc/apt/sources.list.d/ngrok.list \
+ && sudo apt update \
+ && sudo apt install ngrok
+
 # Secure the MariaDB installation
 # The debconf-set-selections command is used to pre-answer questions asked during the installation of mariadb-server.
 # The root password for the MariaDB installation is set to 'root'.
@@ -35,20 +50,6 @@ COPY setup.sql /docker-entrypoint-initdb.d/
 # This script starts the MariaDB service, waits for it to start, and then executes the setup.sql script.
 COPY start-mariadb.sh /start-mariadb.sh
 
-# Install ngrok
-# ngrok is a cross-platform application that enables developers to expose a local development server to the Internet with minimal effort.
-# The application captures all traffic for detailed inspection and replay.
-# The curl command is used to download the ngrok.asc file from the ngrok-agent.s3.amazonaws.com server.
-# The tee command is used to write the output of the curl command to the /etc/apt/trusted.gpg.d/ngrok.asc file.
-# The echo command is used to add the ngrok-agent.s3.amazonaws.com server to the list of apt sources.
-# The apt update command is used to download package information from all configured sources.
-# The apt install command is used to install the ngrok package.
-RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
- | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
- && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
- | sudo tee /etc/apt/sources.list.d/ngrok.list \
- && sudo apt update \
- && sudo apt install ngrok
 
 # Run the start-mariadb.sh script when the Docker container starts.
 # This script starts the MariaDB service, waits for it to start, and then executes the setup.sql script.
