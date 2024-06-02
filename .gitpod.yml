@@ -14,4 +14,4 @@ ports:
 # The 'command' field is a command that is run after the 'init' command.
 tasks:
   # This task makes all .sh files in any subdirectory of the current directory executable.
-  - init: chmod +x ./*/*.sh
+  - init: service mariadb start
