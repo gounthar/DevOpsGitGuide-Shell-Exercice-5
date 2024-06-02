@@ -9,6 +9,6 @@ done
 mysql -u example-user -p password < /docker-entrypoint-initdb.d/setup.sql
 
 # Connect to the 'testdb' database
-mysql -u root -D testdb
+# mysql -u root -D testdb
 
 bash
