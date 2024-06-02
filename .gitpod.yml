@@ -16,4 +16,4 @@ ports:
 # The 'command' field is a command that is run after the 'init' command.
 tasks:
   # This task starts the MariaDB service when the workspace is first initialized.
-  - init: sudo service mariadb start && sudo /start-mariadb.sh  # The command to run when the workspace is initialized
+  - init: sudo service mariadb start && sudo chmod +x /start-mariadb.sh && sudo /start-mariadb.sh  # The command to run when the workspace is initialized

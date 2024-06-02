@@ -6,5 +6,5 @@ while ! mysqladmin ping -s; do
     sleep 1
 done
 
-mysql -u root < /docker-entrypoint-initdb.d/setup.sql
+mysql -u example-user -p password < /docker-entrypoint-initdb.d/setup.sql
 bash
