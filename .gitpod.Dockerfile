@@ -13,28 +13,7 @@ USER root
 # Tree is a recursive directory listing program that produces a depth-indented listing of files.
 # The apt-get update command is used to download package information from all configured sources.
 # The apt-get install command is used to install the specified packages.
-RUN apt-get update && apt-get install -y cron mariadb-server tree
-
-# Start the cron service.
-# The service command is used to run a System V init script.
-RUN service cron start
-
-# Secure the MariaDB installation
-# The debconf-set-selections command is used to pre-answer questions asked during the installation of mariadb-server.
-# The root password for the MariaDB installation is set to 'root'.
-RUN echo "mysql-server mysql-server/root_password password root" | debconf-set-selections && \
-    echo "mysql-server mysql-server/root_password_again password root" | debconf-set-selections && \
-    apt-get install -y mariadb-server
-
-# Create a test database and user
-# The MariaDB configuration file is modified to skip the grant tables and bind to all interfaces.
-# The setup.sql script, which creates a test database and user, is copied to the docker-entrypoint-initdb.d directory.
-# The docker-entrypoint-initdb.d directory is a special directory that MySQL checks at startup and executes any scripts found.
-RUN echo "[mysqld]\n\
-skip-grant-tables\n\
-bind-address = 0.0.0.0" > /etc/mysql/mariadb.conf.d/50-server.cnf
-
-COPY setup.sql /docker-entrypoint-initdb.d/
+RUN apt-get update && apt-get install -y cron mariadb-server mariadb-client tree
 
 # Install ngrok
 # ngrok is a cross-platform application that enables developers to expose a local development server to the Internet with minimal effort.
@@ -45,8 +24,33 @@ COPY setup.sql /docker-entrypoint-initdb.d/
 # The apt update command is used to download package information from all configured sources.
 # The apt install command is used to install the ngrok package.
 RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-	| sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-	&& echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-	| sudo tee /etc/apt/sources.list.d/ngrok.list \
-	&& sudo apt update \
-	&& sudo apt install ngrok
+ | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+ && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+ | sudo tee /etc/apt/sources.list.d/ngrok.list \
+ && sudo apt update \
+ && sudo apt install ngrok
+
+# Secure the MariaDB installation
+# The debconf-set-selections command is used to pre-answer questions asked during the installation of mariadb-server.
+# The root password for the MariaDB installation is set to 'root'.
+RUN echo "mysql-server mysql-server/root_password password root" | debconf-set-selections && \
+    echo "mysql-server mysql-server/root_password_again password root" | debconf-set-selections && \
+    apt-get install -y mariadb-server
+
+# Create a test database and user
+# The MariaDB configuration file is modified to bind to all interfaces.
+RUN echo "[mysqld]\n\
+bind-address = 0.0.0.0" > /etc/mysql/mariadb.conf.d/50-server.cnf
+
+# Copy the setup.sql file to the /docker-entrypoint-initdb.d/ directory in the Docker image.
+# This script will be executed when the MariaDB service starts.
+COPY setup.sql /docker-entrypoint-initdb.d/
+
+# Copy the start-mariadb.sh script to the Docker image.
+# This script starts the MariaDB service, waits for it to start, and then executes the setup.sql script.
+COPY start-mariadb.sh /start-mariadb.sh
+
+
+# Run the start-mariadb.sh script when the Docker container starts.
+# This script starts the MariaDB service, waits for it to start, and then executes the setup.sql script.
+CMD ["/start-mariadb.sh"]
